@@ -1,0 +1,29 @@
+# RSA
+
+$$
+(m^e)^d \equiv m\pmod n
+\\\\
+n, e: \text{public key}
+\\\\
+n, d: \text{private key}
+\\\\
+m: \text{message}
+$$
+
+ 
+<div>
+$$
+(m^e)^d = m^{(ed)} = m^{(de)} = (m^d)^e \equiv m\pmod n
+$$
+</div>
+
+???
+
+public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
+
+En public-key, og en private-key. Som navnene antyder så kan den ene deles fritt, mens den andre må holdes hemmelig.
+
+Matematikken bak RSA utnytter faktum at primtallfaktorisering er vanskelig. Mens det å multiplisere tall er enkelt.
+På den måten lages en en-veis funksjon, hvor det er enkelt å gjøre og verifisere, men vanskelig å reversere.
+
+Vi skal ta en liten titt på det. Men dette er ikke så supert viktig, men litt interessant for noen.

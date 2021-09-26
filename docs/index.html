@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Talk - Modialogin</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://cdn.rawgit.com/bekk/remark/master/dist/bekk.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+    </style>
+</head>
+<body>
+<textarea id="source">
+class: center, middle
+
+# Sikkerhet - Modialogin
+
+???
+
+Vi skal snakke litt om hvordan sikkerheten er ivaretatt for løsningene våre.
+
+I all hovedsak kommer vi til å titte på løsningen i fagsystemsonen, men det er tilsvarende oppsett i selvbetjeningsonen.
+
+---
+
+# Agenda
+
+1. Litt om kryptografien
+2. Applikasjonene våre
+3. Eksempel
+
+???
+
+## Kryptografien
+Bare så vi vet litt om hva som skjer i bakkant, så tar vi ett titt på kryptografien som er i bruk her.
+Med det tenker jeg på;
+* RSA, public-key kryptoen vi bruker
+* JWT, JSON Web Token
+* JWK, JSON Web Key
+* JWS, JSON Web Signature
+* JWE, JSON Web Encryption (Denne brukes ikke på huset, så denne hopper vi over)
+* OAuth/OIDC, openId Connect /OAuth
+
+Om alle i rommet har en god forstårelse av hva forkortelsene er, og hvordan det fungerer så kan vi hoppe over de.
+
+Liten håndsopprekning?
+
+## Applikasjonene våre
+Hvilke applikasjoner har vi som vi bruker, og hvordan fungerer de sammen.kryptografien
+
+## Eksempel
+Vi gjøre en virtuell gjennomgjøres av en http-request mot våre apper, slik at vi kan få tittet litt på kode også.
+
+---
+
+# RSA
+
+$$
+(m^e)^d \equiv m\pmod n
+\\\\
+n, e: \text{public key}
+\\\\
+n, d: \text{private key}
+\\\\
+m: \text{message}
+$$
+
+ 
+<div class="hidden">
+$$
+(m^e)^d = m^{(ed)} = m^{(de)} = (m^d)^e \equiv m\pmod n
+$$
+</div>
+
+???
+
+public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
+
+En public-key, og en private-key. Som navnene antyder så kan den ene deles fritt, mens den andre må holdes hemmelig.
+
+Og alt dette fungerer pga denne sannheten (**NEXT SLIDE**).
+
+Matematikken bak RSA utnytter også at primtallfaktorisering er vanskelig. Mens det å multiplisere tall er enkelt.
+På den måten lages en en-veis funksjon, hvor det er enkelt å gjøre og verifisere, men vanskelig å reversere.
+
+Vi skal ta en liten titt på det. Men dette er ikke så supert viktig, men litt interessant for noen.
+
+---
+
+# RSA
+
+$$
+(m^e)^d \equiv m\pmod n
+\\\\
+n, e: \text{public key}
+\\\\
+n, d: \text{private key}
+\\\\
+m: \text{message}
+$$
+
+ 
+<div>
+$$
+(m^e)^d = m^{(ed)} = m^{(de)} = (m^d)^e \equiv m\pmod n
+$$
+</div>
+
+???
+
+public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
+
+En public-key, og en private-key. Som navnene antyder så kan den ene deles fritt, mens den andre må holdes hemmelig.
+
+Matematikken bak RSA utnytter faktum at primtallfaktorisering er vanskelig. Mens det å multiplisere tall er enkelt.
+På den måten lages en en-veis funksjon, hvor det er enkelt å gjøre og verifisere, men vanskelig å reversere.
+
+Vi skal ta en liten titt på det. Men dette er ikke så supert viktig, men litt interessant for noen.
+
+---
+
+# RSA - Data
+
+$$
+p,q:\text{ noen store random primtall}
+\\\\
+n=pq
+\\\\
+\begin{eqnarray}
+Finn\ \lambda(n) &=& lcm(\lambda(p), \lambda(q)) \nonumber \\\\
+           &=& lcm(\varphi(p), \varphi(q)) \nonumber \\\\
+           &=& lcm(p - 1, q - 1) \nonumber
+\end{eqnarray}
+$$
+
+???
+
+Velger først to random store primstall P OG Q
+
+lamda-tegnet er "Carmichael's totient function", phi-tegnet er eulers totient funksjon.
+Men siden "PQ" er primtall så er disse like, og alltid lik til P-1/Q-1.
+"LCM" (least common multiple) er lik produktet delt på GCD (greated common divisor) som kan enkel regnes ut vha euclidean algorithm.
+
+PQ holder hemmelig, mens N er en del av publickey.
+lambda(N) holdes også hemmelig.
+Selvom utregningen av lambda(n) er enkel, så er det ikke så enkelt om man ikke kjenner til PQ, som holdes hemmelig.
+
+Valg av E er litt arbitrært ofte 2^16+1 blir brukt så lenge det holder begrensningen om gcm, e.g er co-prime med totient-verdien.
+
+Utregningen av D kan gjøres effektivt takket være at E og lamda(N) er co-prime. Og holdes såklart hemmelig i ettertid.
+
+
+
+
+---
+
+# RSA - Data
+
+$$
+p,q:\text{ noen store random primtall}
+\\\\
+n=pq
+\\\\
+\begin{eqnarray}
+Finn\ \lambda(n) &=& lcm(\lambda(p), \lambda(q)) \nonumber \\\\
+           &=& lcm(\varphi(p), \varphi(q)) \nonumber \\\\
+           &=& lcm(p - 1, q - 1) \nonumber
+\end{eqnarray}
+$$
+
+$$
+Velg\ e, 1 < e < \lambda(n)\text{ and }gcd(e, \lambda(n))=1
+$$
+
+???
+
+public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
+
+En public-key, og en private-key. Som navnene antyder så kan den ene deles fritt, mens den andre må holdes hemmelig.
+
+Matematikken bak RSA utnytter faktum at primtallfaktorisering er vanskelig. Mens det å multiplisere tall er enkelt.
+På den måten lages en en-veis funksjon, hvor det er enkelt å gjøre og verifisere, men vanskelig å reversere.
+
+
+lamda-tegnet er "Carmichael's totient function", phi-tegnet er eulers totient funksjon.
+Men siden "PQ" er primtall så er disse like, og alltid lik til P-1/Q-1.
+
+PQ holder hemmelig, mens N er en del av publickey.
+lambda(N) holdes også hemmelig.
+Selvom utregningen av lambda(n) er enkel, så er det ikke så enkelt om man ikke kjenner til PQ, som holdes hemmelig.
+
+Valg av E er litt arbitrært ofte 2^16+1 blir brukt så lenge det holder begrensningen om gcm, e.g er co-prime med totient-verdien.
+
+Utregningen av D kan gjøres effektivt takket være at E og lamda(N) er co-prime. Og holdes såklart hemmelig i ettertid.
+
+
+
+
+---
+
+# RSA - Data
+
+$$
+p,q:\text{ noen store random primtall}
+\\\\
+n=pq
+\\\\
+\begin{eqnarray}
+Finn\ \lambda(n) &=& lcm(\lambda(p), \lambda(q)) \nonumber \\\\
+           &=& lcm(\varphi(p), \varphi(q)) \nonumber \\\\
+           &=& lcm(p - 1, q - 1) \nonumber
+\end{eqnarray}
+$$
+
+$$
+Velg\ e, 1 < e < \lambda(n)\text{ and }gcd(e, \lambda(n))=1
+$$
+
+$$
+d\equiv e^{-1}\pmod{\lambda(n)}
+$$
+
+???
+
+public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
+
+En public-key, og en private-key. Som navnene antyder så kan den ene deles fritt, mens den andre må holdes hemmelig.
+
+Matematikken bak RSA utnytter faktum at primtallfaktorisering er vanskelig. Mens det å multiplisere tall er enkelt.
+På den måten lages en en-veis funksjon, hvor det er enkelt å gjøre og verifisere, men vanskelig å reversere.
+
+
+lamda-tegnet er "Carmichael's totient function", phi-tegnet er eulers totient funksjon.
+Men siden "PQ" er primtall så er disse like, og alltid lik til P-1/Q-1.
+
+PQ holder hemmelig, mens N er en del av publickey.
+lambda(N) holdes også hemmelig.
+Selvom utregningen av lambda(n) er enkel, så er det ikke så enkelt om man ikke kjenner til PQ, som holdes hemmelig.
+
+Valg av E er litt arbitrært ofte 2^16+1 blir brukt så lenge det holder begrensningen om gcm, e.g er co-prime med totient-verdien.
+
+Utregningen av D kan gjøres effektivt takket være at E og lamda(N) er co-prime. Og holdes såklart hemmelig i ettertid.
+Inversen her ikke ikke den normale 1/e-varianten siden vi driver modulo-artimetikk. Men det kan igjen løses vha euclidean algoritme.
+
+
+
+
+---
+
+# RSA - Signering
+
+$$
+h = hash(m);
+\\\\
+(h^e)^d = h^{(ed)} = h^{(de)} = (h^d)^e \equiv h\pmod n
+$$
+
+???
+
+public/private keys kan brukes til både, signering/verifisering og kryptering/dekryptering.
+For oss er det signering som er interessant.
+
+Signering skjer ved at avsender bruker sin private-key (`h^d`) på hashen (h),
+mottager bruker deretter avsenders public key (`(h^d)^e`) og sammenligner hash-verdien.
+
+Om det er stemmer overens så vet mottager at avsender er den man sier (eller i det minste har tilgang på deres private-key).
+Her bruker vi den for å kryptere en hash, som etterpå kan verifiseres vha public-keyen, e.g en signatur.
+
+For kryptering av meldinger kan man bruke en annen persons public-key, før man sender meldingen.
+Den vil da kun være lesbar for den personen, siden man trenger private-keyen for å dekryptere den.
+
+Dette kan også kombineres, e.g, at man ved sending bruker sin egen private-key (for signering) og deretter mottagers public-key (for krypering).
+Mottager er da den eneste som kan lese meldingen, og kan verifisere at du er den eneste som kan ha vært avsenderen.
+
+Men dette er ikke noe vi bruker, så går ikke nærmere inn på dette.
+
+
+
+
+---
+
+class: cols two
+
+# JWT - JWK - JWS
+.col[
+<pre class="jwt">
+    <span class="jwt__header">eyJraWQiOiIwNWVhZTY2Zi1iODA2LTRhYWUtYTk2OS0zMjJkODM0YmM5MzYiLCJhbGciOiJSUzI1NiJ9</span>.
+    <span class="jwt__claims">eyJpc3MiOiJzdHViIiwiYXVkIjoiZm9vIiwic3ViIjoiWjk5OTk5OSIsImV4cCI6MTYzMjY4MTA0NywiaWF0IjoxNjMyNjgwNDQ3fQ</span>.
+    <span class="jwt__signature">dwfT9E4GaP5xBqu5IZFidKScmsC1na9n1I-bvgyOriF6swaGrYGoQIl9GMpxEghCRF3FJPwps4o8xK60eFArcrWFBfQd4jXHvwVEWEaI1Ae1v0nMvH3CADBfcBY8uFWrZBCxt8Efve6HcqoFpOMe_G5nHNZ-laJEFfjIRamk-56Q3SqOUHr_EKaJC6b8l6C2XQPEhBMukZ5cf1gCbqdE9XjQTYPWUSuIVV2XZueNjoCBKyripZfo7Fgc7zpIwksgRt8cK8gQRhh3FKQKphtWi45yzw8ym4XWVWTBLPHBhscv2XHbgwFyYe8zL8OisVfPeuWFpDCGXVzbbCuVudd9Ow</span>
+</pre>
+]
+.col[
+<div class="jwt">
+<pre class="jwt__header">
+{
+  "kid": "05eae66f-b806",
+  "alg": "RS256"
+}
+</pre>
+<pre class="jwt__claims">
+{
+  "iss": "stub",
+  "aud": "foo",
+  "sub": "Z999999",
+  "exp": 1632682041,
+  "iat": 1632681441
+}
+</pre>
+</div>
+]
+???
+
+Talkingpoints
+</textarea>
+
+<script src="https://remarkjs.com/downloads/remark-0.15.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+<script src="remark-init-script.js" type="application/javascript"></script>
+<script>
+    var slideshow = createSlides()
+</script>
+</body>
+</html>

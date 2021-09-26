@@ -1,0 +1,32 @@
+body {
+
+}
+.remark-slide-content {
+
+}
+
+.hidden {
+    position: relative;
+    left: -9999px;
+}
+
+.jwt {
+    white-space: normal;
+    max-width: 30rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+.jwt > * {
+    margin: 0;
+    word-break: break-all;
+    font-family: 'Ubuntu Mono', Menlo, monospace;
+}
+.jwt .jwt__header {
+    color: #fb015b;
+}
+.jwt .jwt__claims {
+    color: #d63aff;
+}
+.jwt .jwt__signature {
+    color: #00b9f1;
+}

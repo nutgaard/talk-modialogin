@@ -1,0 +1,28 @@
+# RSA - Signering
+
+$$
+h = hash(m);
+\\\\
+(h^e)^d = h^{(ed)} = h^{(de)} = (h^d)^e \equiv h\pmod n
+$$
+
+???
+
+public/private keys kan brukes til både, signering/verifisering og kryptering/dekryptering.
+For oss er det signering som er interessant.
+
+Signering skjer ved at avsender bruker sin private-key (`h^d`) på hashen (h),
+mottager bruker deretter avsenders public key (`(h^d)^e`) og sammenligner hash-verdien.
+
+Om det er stemmer overens så vet mottager at avsender er den man sier (eller i det minste har tilgang på deres private-key).
+Her bruker vi den for å kryptere en hash, som etterpå kan verifiseres vha public-keyen, e.g en signatur.
+
+For kryptering av meldinger kan man bruke en annen persons public-key, før man sender meldingen.
+Den vil da kun være lesbar for den personen, siden man trenger private-keyen for å dekryptere den.
+
+Dette kan også kombineres, e.g, at man ved sending bruker sin egen private-key (for signering) og deretter mottagers public-key (for krypering).
+Mottager er da den eneste som kan lese meldingen, og kan verifisere at du er den eneste som kan ha vært avsenderen.
+
+Men dette er ikke noe vi bruker, så går ikke nærmere inn på dette.
+
+

@@ -1,0 +1,31 @@
+# RSA - Data
+
+$$
+p,q:\text{ noen store random primtall}
+\\\\
+n=pq
+\\\\
+\begin{eqnarray}
+Finn\ \lambda(n) &=& lcm(\lambda(p), \lambda(q)) \nonumber \\\\
+           &=& lcm(\varphi(p), \varphi(q)) \nonumber \\\\
+           &=& lcm(p - 1, q - 1) \nonumber
+\end{eqnarray}
+$$
+
+???
+
+Velger først to random store primstall P OG Q
+
+lamda-tegnet er "Carmichael's totient function", phi-tegnet er eulers totient funksjon.
+Men siden "PQ" er primtall så er disse like, og alltid lik til P-1/Q-1.
+"LCM" (least common multiple) er lik produktet delt på GCD (greated common divisor) som kan enkel regnes ut vha euclidean algorithm.
+
+PQ holder hemmelig, mens N er en del av publickey.
+lambda(N) holdes også hemmelig.
+Selvom utregningen av lambda(n) er enkel, så er det ikke så enkelt om man ikke kjenner til PQ, som holdes hemmelig.
+
+Valg av E er litt arbitrært ofte 2^16+1 blir brukt så lenge det holder begrensningen om gcm, e.g er co-prime med totient-verdien.
+
+Utregningen av D kan gjøres effektivt takket være at E og lamda(N) er co-prime. Og holdes såklart hemmelig i ettertid.
+
+
