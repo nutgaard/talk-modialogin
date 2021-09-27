@@ -10,6 +10,21 @@ body {
     left: -9999px;
 }
 
+.center-text {
+    text-align: center;
+}
+.img-invert {
+    filter: invert(1);
+    mix-blend-mode: lighten;
+}
+
+.credits {
+    position: absolute;
+    bottom: 12px;
+    left: 10px;
+    opacity: 0.5;
+}
+
 .jwt {
     white-space: normal;
     max-width: 30rem;

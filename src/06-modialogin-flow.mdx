@@ -1,0 +1,20 @@
+# Modialogin flow
+
+<div class="center-text">
+    <img src="resources/auth-flow-modialogin.svg" height="500" class="img-invert"/>
+</div>
+
+???
+
+Vi bruker i bunn og grunn samme flyten, men har delegert mye av arbeidet over til modialogin-appen.
+Dette er litt som "loginservice" gjør i SBS (som er deprecated men men).
+
+Tanken er relativt rett frem. Frontend-appene sjekker bare om bruker er logget inn, hvis ikke så sendes de til modialogin.
+Hvis de er logget inn så er jo alt greit, og vi kan gi dem koden for frontend vår.
+
+Både "Frontend" og "Modialogin" biten av diagrammet her ligger i repoet våres som heter "modialogin".
+Så jeg tenker vi skal spinne opp den for å titte litt nærmere på hvordan koden der er.
+
+Til slutt tar vi oss en runde og titter litt på hvordan dette fungerer i preprod eller vha modialogin-test-riggen.
+Så kan vi få tittet litt på kode også. :)
+

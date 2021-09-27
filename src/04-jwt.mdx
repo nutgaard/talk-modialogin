@@ -1,6 +1,6 @@
 class: cols two
 
-# JWT - JWK - JWS
+# JSON Web Token med Signatur
 .col[
 <pre class="jwt">
     <span class="jwt__header">eyJraWQiOiIwNWVhZTY2Zi1iODA2LTRhYWUtYTk2OS0zMjJkODM0YmM5MzYiLCJhbGciOiJSUzI1NiJ9</span>.
@@ -27,6 +27,37 @@ class: cols two
 </pre>
 </div>
 ]
+
+<div class="credits">
+    <a target="_blank" href="https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1">https://datatracker.ietf.org/doc/html/rfc7519</a>
+</div>
+
 ???
 
-Talkingpoints
+Da har vi tittet litt på matematikken bak, så nå skal vi bevege oss litt mer over til det vi faktisk bruker.
+
+På skjermen er det ett eksempel på ett JWT (JSON Web Token) (til venstre) og samme tokenet dekodet til høyre.
+Dette er tilsvarende visningen man kan se på jwt.io.
+
+Vi kan se at tokenet består av tre deler
+* JOSE-header (Javascript Object Signature Encryption), Base64
+* Body, som inneholder ett sett av "claims", Base64
+* Signaturen
+
+Vi kan også se at headeren refererer til "RS256", dette indikerer at det er brukt RSA + SHA-256.
+SHA-256, for de som ikke er kjent med den, er en hashing-funksjon alà MD5, men sikrere.
+
+Dette kommer vi litt mer innpå når vi skal titte på hvordan våre løsninger knytter inn mot dette.
+Men det er greit å vite at det er faktisk ett sånt token vi driver å sender fra frontend til backend,
+når vi ønsker å sjekke om noen er logget inn.
+
+I eksempel har vi tatt med de vanligste "claimene" vi titter på, men her kan det ligge mye annet også (Se RFC7519)
+
+Men en rask gjennomgang av hva disse betyr:
+* iss: issuer. Identifiserer hvem som ga oss tokenet
+* sub: subject. Identifiserer hvem tokenet representerer
+* aud: audience. Identifiserer mottager av tokenet
+* exp: expiration time. Utløpsdatoen til tokenet
+* iat: Issued at. Når tokenet ble utstedt
+
+Så hvordan får vi tak i ett sånt token da? Hva er flyten?

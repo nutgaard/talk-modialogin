@@ -6,12 +6,16 @@ h = hash(m);
 (h^e)^d = h^{(ed)} = h^{(de)} = (h^d)^e \equiv h\pmod n
 $$
 
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
+
 ???
 
 public/private keys kan brukes til både, signering/verifisering og kryptering/dekryptering.
 For oss er det signering som er interessant.
 
-Signering skjer ved at avsender bruker sin private-key (`h^d`) på hashen (h),
+Signering skjer ved at avsender bruker sin private-key (`h^d`) på hashen (h) (typisk SHA-256),
 mottager bruker deretter avsenders public key (`(h^d)^e`) og sammenligner hash-verdien.
 
 Om det er stemmer overens så vet mottager at avsender er den man sier (eller i det minste har tilgang på deres private-key).
@@ -24,5 +28,7 @@ Dette kan også kombineres, e.g, at man ved sending bruker sin egen private-key 
 Mottager er da den eneste som kan lese meldingen, og kan verifisere at du er den eneste som kan ha vært avsenderen.
 
 Men dette er ikke noe vi bruker, så går ikke nærmere inn på dette.
+
+Så hvordan ser dette ut om vi prøver å utnytte dette til å sikre løsningene våre. Svaret er jo da JWT.
 
 

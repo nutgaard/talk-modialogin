@@ -1,0 +1,25 @@
+# OAuth Authorization Code flow
+
+<div class="center-text">
+    <img src="resources/auth-code-flow.svg" height="500" class="img-invert"/>
+</div>
+
+<div class="credits">
+    <a target="_blank" href="https://blog.postman.com/pkce-oauth-how-to/">https://blog.postman.com/pkce-oauth-how-to/</a>
+</div>
+
+???
+
+Flyten vi bruker heter "Authorization Code Flow" og er spesifisert som en del av OAuth2.0 spec-en.
+
+Diagrammet på sliden viser flyten når en bruker kommer til en av våre løsninger, og vi trenger å gjøre innlogging.
+Vi skal gå gjennom punkt for punkt, og etterpå skal vi titte på hvordan dette er implementert i våres apper.
+
+1. click login link. SBS har en login-knapp, men typisk skjer dette steget ved at man prøver å gå til websiden.
+2. request auth code. Det startes en flyt for å få logget inn bruker.
+3. authenticate and consent. Bruker får typisk opp ett skjema, og må logge inn.
+4. auth code. Appen får da tak "Auth code". Denne brukes senere av appen, men er ikke noe bruker noen gang ser.
+5. auth code + clientId + clientSecret sendes på nytt til AuthServer for å få tak i IdToken + AccessToken.
+6. AccessToken blir returnert og vi er klare til å gjøre kall til APIet
+
+Så hvordan relaterer dette til våre apper?

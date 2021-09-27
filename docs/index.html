@@ -73,6 +73,10 @@ $$
 $$
 </div>
 
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
+
 ???
 
 public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
@@ -107,6 +111,10 @@ $$
 $$
 </div>
 
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
+
 ???
 
 public-key kroptosystem som er er asymmetrisk kryptosystem, som betyr at vi har to nøkler.
@@ -120,7 +128,7 @@ Vi skal ta en liten titt på det. Men dette er ikke så supert viktig, men litt 
 
 ---
 
-# RSA - Data
+# RSA
 
 $$
 p,q:\text{ noen store random primtall}
@@ -133,6 +141,10 @@ Finn\ \lambda(n) &=& lcm(\lambda(p), \lambda(q)) \nonumber \\\\
            &=& lcm(p - 1, q - 1) \nonumber
 \end{eqnarray}
 $$
+
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
 
 ???
 
@@ -155,7 +167,7 @@ Utregningen av D kan gjøres effektivt takket være at E og lamda(N) er co-prime
 
 ---
 
-# RSA - Data
+# RSA
 
 $$
 p,q:\text{ noen store random primtall}
@@ -172,6 +184,10 @@ $$
 $$
 Velg\ e, 1 < e < \lambda(n)\text{ and }gcd(e, \lambda(n))=1
 $$
+
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
 
 ???
 
@@ -199,7 +215,7 @@ Utregningen av D kan gjøres effektivt takket være at E og lamda(N) er co-prime
 
 ---
 
-# RSA - Data
+# RSA
 
 $$
 p,q:\text{ noen store random primtall}
@@ -220,6 +236,10 @@ $$
 $$
 d\equiv e^{-1}\pmod{\lambda(n)}
 $$
+
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
 
 ???
 
@@ -256,12 +276,16 @@ h = hash(m);
 (h^e)^d = h^{(ed)} = h^{(de)} = (h^d)^e \equiv h\pmod n
 $$
 
+<div class="credits">
+    <a target="_blank" href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">https://en.wikipedia.org/wiki/RSA_(cryptosystem)</a>
+</div>
+
 ???
 
 public/private keys kan brukes til både, signering/verifisering og kryptering/dekryptering.
 For oss er det signering som er interessant.
 
-Signering skjer ved at avsender bruker sin private-key (`h^d`) på hashen (h),
+Signering skjer ved at avsender bruker sin private-key (`h^d`) på hashen (h) (typisk SHA-256),
 mottager bruker deretter avsenders public key (`(h^d)^e`) og sammenligner hash-verdien.
 
 Om det er stemmer overens så vet mottager at avsender er den man sier (eller i det minste har tilgang på deres private-key).
@@ -275,6 +299,8 @@ Mottager er da den eneste som kan lese meldingen, og kan verifisere at du er den
 
 Men dette er ikke noe vi bruker, så går ikke nærmere inn på dette.
 
+Så hvordan ser dette ut om vi prøver å utnytte dette til å sikre løsningene våre. Svaret er jo da JWT.
+
 
 
 
@@ -282,7 +308,7 @@ Men dette er ikke noe vi bruker, så går ikke nærmere inn på dette.
 
 class: cols two
 
-# JWT - JWK - JWS
+# JSON Web Token med Signatur
 .col[
 <pre class="jwt">
     <span class="jwt__header">eyJraWQiOiIwNWVhZTY2Zi1iODA2LTRhYWUtYTk2OS0zMjJkODM0YmM5MzYiLCJhbGciOiJSUzI1NiJ9</span>.
@@ -309,9 +335,141 @@ class: cols two
 </pre>
 </div>
 ]
+
+<div class="credits">
+    <a target="_blank" href="https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1">https://datatracker.ietf.org/doc/html/rfc7519</a>
+</div>
+
 ???
 
-Talkingpoints
+Da har vi tittet litt på matematikken bak, så nå skal vi bevege oss litt mer over til det vi faktisk bruker.
+
+På skjermen er det ett eksempel på ett JWT (JSON Web Token) (til venstre) og samme tokenet dekodet til høyre.
+Dette er tilsvarende visningen man kan se på jwt.io.
+
+Vi kan se at tokenet består av tre deler
+* JOSE-header (Javascript Object Signature Encryption), Base64
+* Body, som inneholder ett sett av "claims", Base64
+* Signaturen
+
+Vi kan også se at headeren refererer til "RS256", dette indikerer at det er brukt RSA + SHA-256.
+SHA-256, for de som ikke er kjent med den, er en hashing-funksjon alà MD5, men sikrere.
+
+Dette kommer vi litt mer innpå når vi skal titte på hvordan våre løsninger knytter inn mot dette.
+Men det er greit å vite at det er faktisk ett sånt token vi driver å sender fra frontend til backend,
+når vi ønsker å sjekke om noen er logget inn.
+
+I eksempel har vi tatt med de vanligste "claimene" vi titter på, men her kan det ligge mye annet også (Se RFC7519)
+
+Men en rask gjennomgang av hva disse betyr:
+* iss: issuer. Identifiserer hvem som ga oss tokenet
+* sub: subject. Identifiserer hvem tokenet representerer
+* aud: audience. Identifiserer mottager av tokenet
+* exp: expiration time. Utløpsdatoen til tokenet
+* iat: Issued at. Når tokenet ble utstedt
+
+Så hvordan får vi tak i ett sånt token da? Hva er flyten?
+
+---
+
+# OAuth Authorization Code flow
+
+<div class="center-text">
+    <img src="resources/auth-code-flow.svg" height="500" class="img-invert"/>
+</div>
+
+<div class="credits">
+    <a target="_blank" href="https://blog.postman.com/pkce-oauth-how-to/">https://blog.postman.com/pkce-oauth-how-to/</a>
+</div>
+
+???
+
+Flyten vi bruker heter "Authorization Code Flow" og er spesifisert som en del av OAuth2.0 spec-en.
+
+Diagrammet på sliden viser flyten når en bruker kommer til en av våre løsninger, og vi trenger å gjøre innlogging.
+Vi skal gå gjennom punkt for punkt, og etterpå skal vi titte på hvordan dette er implementert i våres apper.
+
+1. click login link. SBS har en login-knapp, men typisk skjer dette steget ved at man prøver å gå til websiden.
+2. request auth code. Det startes en flyt for å få logget inn bruker.
+3. authenticate and consent. Bruker får typisk opp ett skjema, og må logge inn.
+4. auth code. Appen får da tak "Auth code". Denne brukes senere av appen, men er ikke noe bruker noen gang ser.
+5. auth code + clientId + clientSecret sendes på nytt til AuthServer for å få tak i IdToken + AccessToken.
+6. AccessToken blir returnert og vi er klare til å gjøre kall til APIet
+
+Så hvordan relaterer dette til våre apper?
+
+---
+
+# Modialogin flow
+
+<div class="center-text">
+    <img src="resources/auth-flow-modialogin.svg" height="500" class="img-invert"/>
+</div>
+
+???
+
+Vi bruker i bunn og grunn samme flyten, men har delegert mye av arbeidet over til modialogin-appen.
+Dette er litt som "loginservice" gjør i SBS (som er deprecated men men).
+
+Tanken er relativt rett frem. Frontend-appene sjekker bare om bruker er logget inn, hvis ikke så sendes de til modialogin.
+Hvis de er logget inn så er jo alt greit, og vi kan gi dem koden for frontend vår.
+
+Både "Frontend" og "Modialogin" biten av diagrammet her ligger i repoet våres som heter "modialogin".
+Så jeg tenker vi skal spinne opp den for å titte litt nærmere på hvordan koden der er.
+
+Til slutt tar vi oss en runde og titter litt på hvordan dette fungerer i preprod eller vha modialogin-test-riggen.
+Så kan vi få tittet litt på kode også. :)
+
+
+
+---
+
+class: center, middle
+
+# KODE
+
+<div class="credits">
+    <a target="_blank" href="https://github.com/navikt/modialogin">https://github.com/navikt/modialogin</a>
+</div>
+
+???
+
+<a target="_blank" href="https://github.com/navikt/modialogin">https://github.com/navikt/modialogin</a>
+
+
+---
+
+# Andre nyttige ting
+
+* JWT: JSON Web Token
+* OAuth: Authorization Framework
+* OIDC: OpenID Connect (Bygger på OAuth)
+* SSO: Single Sign-on
+* ISSO: Intern SSO
+* ESSO: Ekstern SSO
+* STS: Security token service (STS'en, gandalf, TokenX/TokenDings)
+
+???
+
+Bare litt nyttige ord/uttrykk på slutten.
+
+Det meste her er ikke super nyttige, men konseptet om en STS er noe som er litt relevant for oss også.
+Det er en applikasjon som kan bytte ut ett token med ett annet ett f.eks kan det bytte et JWT til SAML slik at det kan brukes med SOAP-tjenester.
+
+Kan også bytte ut JWT med ett annet JWT som har andre rettigheter og få ett såkalt on-behalf-of token.
+Dette blir mer og mer relevant for rest på NAV, men for oss bruker vi bare sånt når vi bruker SOAP.
+
+
+
+
+
+
+---
+
+class: center, middle
+
+# The end
+
 </textarea>
 
 <script src="https://remarkjs.com/downloads/remark-0.15.0.min.js"></script>
